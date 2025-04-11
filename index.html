@@ -394,6 +394,8 @@
 
         // Initialize the application
         function init() {
+            console.log("Initializing application...");
+            
             // Event listeners
             elements.refreshBtn.addEventListener('click', refreshScores);
             elements.sortBy.addEventListener('change', renderLeaderboard);
@@ -412,6 +414,9 @@
             
             // Set up auto-refresh
             setupAutoRefresh();
+            
+            // Show status
+            elements.status.textContent = 'Application initialized. Loading data...';
         }
 
         // Load the pool data
@@ -698,8 +703,15 @@
                 // Update the state with new scores
                 state.golfersData = scores;
                 
+                // Ensure we have valid data
+                console.log(`Generated scores for ${scores.length} golfers`);
+                
                 // Calculate scores for each team
                 calculateTeamScores();
+                
+                // Debug - check team scores
+                console.log(`Calculated scores for ${state.poolData.teams.length} teams`);
+                console.log(`First few teams:`, state.poolData.teams.slice(0, 3));
                 
                 // Render the tables
                 renderLeaderboard();
@@ -718,12 +730,23 @@
 
         // Calculate scores for each team based on their golfers' performances
         function calculateTeamScores() {
-            if (!state.poolData || !state.poolData.teams || !state.golfersData) return;
+            console.log("Calculating team scores...");
+            
+            if (!state.poolData || !state.poolData.teams || !state.golfersData) {
+                console.error("Missing required data for calculation:");
+                console.log("poolData exists:", !!state.poolData);
+                console.log("teams exists:", state.poolData && !!state.poolData.teams);
+                console.log("golfersData exists:", !!state.golfersData);
+                return;
+            }
             
             state.poolData.teams.forEach(team => {
                 // For each golfer on the team, find their score data
                 const golfersWithScores = team.golfers.map(golferName => {
                     const golferData = state.golfersData.find(g => g.name === golferName);
+                    if (!golferData) {
+                        console.warn(`Could not find data for golfer: ${golferName}`);
+                    }
                     return golferData || { name: golferName, score: 0, position: 'N/A', today: 0, thru: '-' };
                 });
                 
@@ -731,8 +754,10 @@
                 team.golfersWithScores = golfersWithScores;
                 
                 // Calculate the team's total score
-                team.totalScore = golfersWithScores.reduce((sum, golfer) => sum + golfer.score, 0);
+                team.totalScore = golfersWithScores.reduce((sum, golfer) => sum + (golfer.score || 0), 0);
             });
+            
+            console.log("Team score calculation complete.");
         }
 
         // Helper function to get position string from score
@@ -966,5 +991,3 @@
         
         // Initialize the application when DOM is loaded
         document.addEventListener('DOMContentLoaded', init);
-    ]
-};
