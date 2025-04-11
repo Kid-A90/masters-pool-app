@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masters Pool Leaderboard</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #025927;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #025927;
+        }
+        button {
+            background-color: #025927;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #037935;
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 1rem;
+        }
+        .tab {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+        .tab.active {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-bottom-color: white;
+            margin-bottom: -1px;
+            border-radius: 4px 4px 0 0;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f5f5f5;
+        }
+        .first { background-color: #fff9c4; }
+        .second { background-color: #f5f5f5; }
+        .third { background-color: #ffe0b2; }
+        .negative { color: green; }
+        .positive { color: red; }
+        .last-update {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Masters Pool Leaderboard</h1>
+    </header>
+    
+    <div class="container">
+        <div class="card">
+            <div id="status">Pool data loaded</div>
+            
+            <div class="tabs">
+                <div class="tab active" data-tab="leaderboard">Pool Leaderboard</div>
+                <div class="tab" data-tab="playerScores">Golfer Scores</div>
+            </div>
+            
+            <div class="tab-content active" id="leaderboard">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Team Name</th>
+                            <th>Golfers</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboardBody">
+                        <!-- Leaderboard rows will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="tab-content" id="playerScores">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Player</th>
+                            <th>Score</th>
+                            <th>Position</th>
+                            <th>Today</th>
+                            <th>Thru</th>
+                        </tr>
+                    </thead>
+                    <tbody id="playerScoresBody">
+                        <!-- Player scores will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <button id="refreshBtn">Refresh Scores</button>
+            <div class="last-update" id="lastUpdate"></div>
+        </div>
+    </div>
+
+    <script>
+        // This is the pool data - edit this to match your actual pool
+        const poolData = {
+            teams: [
+                {
+                    name: "Tiger's Fans",
+                    golfers: [
+                        { name: "Tiger Woods", score: -4, position: "T2", today: -2, thru: "F" },
+                        { name: "Scottie Scheffler", score: -7, position: "1", today: -3, thru: "F" },
+                        { name: "Rory McIlroy", score: -2, position: "T5", today: -1, thru: "F" },
+                        { name: "Jordan Spieth", score: 1, position: "T21", today: 2, thru: "F" }
+                    ]
+                },
+                {
+                    name: "Birdie Brigade",
+                    golfers: [
+                        { name: "Brooks Koepka", score: -1, position: "T9", today: 0, thru: "F" },
+                        { name: "Jon Rahm", score: -3, position: "T3", today: -2, thru: "F" },
+                        { name: "Collin Morikawa", score: 2, position: "T32", today: 1, thru: "F" },
+                        { name: "Justin Thomas", score: 0, position: "T15", today: -1, thru: "F" }
+                    ]
+                },
+                {
+                    name: "Green Jacket Club",
+                    golfers: [
+                        { name: "Dustin Johnson", score: -3, position: "T3", today: -1, thru: "F" },
+                        { name: "Patrick Cantlay", score: 1, position: "T21", today: 0, thru: "F" },
+                        { name: "Xander Schauffele", score: 2, position: "T32", today: 2, thru: "F" },
+                        { name: "Tommy Fleetwood", score: 4, position: "T48", today: 3, thru: "F" }
+                    ]
+                }
+            ]
+        };
+        
+        // Calculate team scores
+        poolData.teams.forEach(team => {
+            team.totalScore = team.golfers.reduce((sum, g) => sum + g.score, 0);
+        });
+        
+        // Initialize app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Render the initial data
+            renderLeaderboard();
+            renderPlayerScores();
+            
+            // Set up event listeners
+            document.getElementById('refreshBtn').addEventListener('click', refreshScores);
+            
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    switchTab(tabId);
+                });
+            });
+            
+            // Update timestamp
+            document.getElementById('lastUpdate').textContent = 'Last updated: ' + new Date().toLocaleString();
+        });
+        
+        // Refresh scores (simulates updating scores with small changes)
+        function refreshScores() {
+            // Update some scores randomly
+            poolData.teams.forEach(team => {
+                team.golfers.forEach(golfer => {
+                    // 50% chance to change score by -1, 0, or +1
+                    if (Math.random() > 0.5) {
+                        const change = Math.floor(Math.random() * 3) - 1;
+                        golfer.score += change;
+                        golfer.today += change;
+                        
+                        // Update position based on new score
+                        if (golfer.score < -5) golfer.position = "T1";
+                        else if (golfer.score < -3) golfer.position = "T" + (Math.floor(Math.random() * 3) + 2);
+                        else if (golfer.score < 0) golfer.position = "T" + (Math.floor(Math.random() * 5) + 5);
+                        else if (golfer.score < 3) golfer.position = "T" + (Math.floor(Math.random() * 10) + 10);
+                        else golfer.position = "T" + (Math.floor(Math.random() * 20) + 20);
+                    }
+                });
+                
+                // Recalculate team total
+                team.totalScore = team.golfers.reduce((sum, g) => sum + g.score, 0);
+            });
+            
+            // Re-render tables
+            renderLeaderboard();
+            renderPlayerScores();
+            
+            // Update timestamp
+            document.getElementById('lastUpdate').textContent = 'Last updated: ' + new Date().toLocaleString();
+        }
+        
+        // Render the leaderboard
+        function renderLeaderboard() {
+            // Sort teams by score
+            const sortedTeams = [...poolData.teams].sort((a, b) => a.totalScore - b.totalScore);
+            
+            // Get table body
+            const body = document.getElementById('leaderboardBody');
+            body.innerHTML = '';
+            
+            // Add rows
+            sortedTeams.forEach((team, index) => {
+                const row = document.createElement('tr');
+                
+                // Add class for top 3
+                if (index === 0) row.classList.add('first');
+                else if (index === 1) row.classList.add('second');
+                else if (index === 2) row.classList.add('third');
+                
+                // Format golfers with scores
+                const golfersHtml = team.golfers.map(g => {
+                    const scoreClass = g.score < 0 ? 'negative' : g.score > 0 ? 'positive' : '';
+                    const scoreText = g.score === 0 ? 'E' : g.score > 0 ? `+${g.score}` : g.score;
+                    return `<div>${g.name} <span class="${scoreClass}">${scoreText}</span></div>`;
+                }).join('');
+                
+                // Format team score
+                const scoreClass = team.totalScore < 0 ? 'negative' : team.totalScore > 0 ? 'positive' : '';
+                const scoreText = team.totalScore === 0 ? 'E' : team.totalScore > 0 ? `+${team.totalScore}` : team.totalScore;
+                
+                // Create row content
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td><strong>${team.name}</strong></td>
+                    <td>${golfersHtml}</td>
+                    <td class="${scoreClass}"><strong>${scoreText}</strong></td>
+                `;
+                
+                body.appendChild(row);
+            });
+        }
+        
+        // Render player scores
+        function renderPlayerScores() {
+            // Get all golfers
+            const allGolfers = [];
+            poolData.teams.forEach(team => {
+                team.golfers.forEach(golfer => {
+                    allGolfers.push(golfer);
+                });
+            });
+            
+            // Sort by score
+            const sortedGolfers = [...allGolfers].sort((a, b) => a.score - b.score);
+            
+            // Get table body
+            const body = document.getElementById('playerScoresBody');
+            body.innerHTML = '';
+            
+            // Add rows
+            sortedGolfers.forEach(golfer => {
+                const row = document.createElement('tr');
+                
+                // Format score
+                const scoreClass = golfer.score < 0 ? 'negative' : golfer.score > 0 ? 'positive' : '';
+                const scoreText = golfer.score === 0 ? 'E' : golfer.score > 0 ? `+${golfer.score}` : golfer.score;
+                
+                // Format today's score
+                const todayClass = golfer.today < 0 ? 'negative' : golfer.today > 0 ? 'positive' : '';
+                const todayText = golfer.today === 0 ? 'E' : golfer.today > 0 ? `+${golfer.today}` : golfer.today;
+                
+                // Create row content
+                row.innerHTML = `
+                    <td><strong>${golfer.name}</strong></td>
+                    <td class="${scoreClass}">${scoreText}</td>
+                    <td>${golfer.position}</td>
+                    <td class="${todayClass}">${todayText}</td>
+                    <td>${golfer.thru}</td>
+                `;
+                
+                body.appendChild(row);
+            });
+        }
+        
+        // Switch between tabs
+        function switchTab(tabId) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.toggle('active', tab.getAttribute('data-tab') === tabId);
+            });
+            
+            // Update content visibility
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.toggle('active', content.id === tabId);
+            });
+        }
+    </script>
+</body>
+</html>
