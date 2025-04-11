@@ -3,101 +3,326 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Masters Pool Leaderboard</title>
+    <title>2025 Masters Pool Leaderboard</title>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
+        :root {
+            --primary-color: #025927; /* Masters green */
+            --accent-color: #ffd700; /* Gold */
+            --text-color: #333;
+            --light-text: #666;
+            --border-color: #ddd;
+            --card-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --header-font: Georgia, serif;
+            --body-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
-        header {
-            background-color: #025927;
-            color: white;
-            padding: 1rem;
-            text-align: center;
+
+        body {
+            font-family: var(--body-font);
+            background-color: #f5f5f5;
+            color: var(--text-color);
+            line-height: 1.6;
         }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1.5rem 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        header h1 {
+            font-family: var(--header-font);
+            font-size: 2rem;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-style: italic;
+            color: var(--accent-color);
+            margin-top: 0.25rem;
+            font-size: 1rem;
+        }
+
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 1rem;
         }
+
         .card {
             background-color: white;
             border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--card-shadow);
         }
+
         h2 {
-            color: #025927;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-family: var(--header-font);
+            font-weight: 600;
         }
+
+        .status {
+            text-align: center;
+            margin: 1rem 0;
+            padding: 0.75rem;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            color: var(--light-text);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .refresh-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .refresh-timer {
+            color: var(--light-text);
+            font-size: 0.9rem;
+        }
+
+        .sort-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
         button {
-            background-color: #025927;
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 0.5rem 1rem;
+            padding: 0.75rem 1.5rem;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
         }
+
         button:hover {
-            background-color: #037935;
+            background-color: #037d36;
         }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        select {
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: white;
+        }
+
         .tabs {
             display: flex;
-            border-bottom: 1px solid #ddd;
             margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            gap: 0.25rem;
         }
+
         .tab {
-            padding: 0.5rem 1rem;
+            padding: 0.75rem 1.25rem;
             cursor: pointer;
+            border: 1px solid transparent;
+            border-bottom: none;
+            border-radius: 6px 6px 0 0;
+            font-weight: 500;
+            transition: all 0.2s;
         }
+
+        .tab:hover {
+            background-color: #f5f5f5;
+        }
+
         .tab.active {
             background-color: white;
-            border: 1px solid #ddd;
+            border-color: var(--border-color);
             border-bottom-color: white;
             margin-bottom: -1px;
-            border-radius: 4px 4px 0 0;
+            color: var(--primary-color);
         }
+
         .tab-content {
             display: none;
         }
+
         .tab-content.active {
             display: block;
         }
+
+        .responsive-table {
+            display: block;
+            width: 100%;
+            overflow-x: auto;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 1rem;
+            background-color: white;
         }
+
         th, td {
             padding: 0.75rem;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid var(--border-color);
         }
+
         th {
+            background-color: #f8f8f8;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        tr:hover {
             background-color: #f5f5f5;
         }
-        .first { background-color: #fff9c4; }
-        .second { background-color: #f5f5f5; }
-        .third { background-color: #ffe0b2; }
-        .negative { color: green; }
-        .positive { color: red; }
+
+        tr.top-three {
+            font-weight: 600;
+        }
+
+        tr.first {
+            background-color: rgba(255, 215, 0, 0.15) !important;  /* Light gold */
+        }
+
+        tr.second {
+            background-color: rgba(192, 192, 192, 0.15) !important;  /* Light silver */
+        }
+
+        tr.third {
+            background-color: rgba(205, 127, 50, 0.15) !important;  /* Light bronze */
+        }
+
+        .player-summary {
+            font-size: 0.85rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .score {
+            font-weight: bold;
+        }
+
+        .positive {
+            color: #d62828;  /* Red for over par (positive) */
+        }
+
+        .negative {
+            color: #2e8b57;  /* Green for under par (negative) */
+        }
+
+        .even {
+            color: var(--text-color);
+        }
+
+        .thru-cell {
+            text-align: center;
+        }
+
+        .bold {
+            font-weight: 600;
+        }
+
         .last-update {
             font-size: 0.8rem;
-            color: #666;
             margin-top: 0.5rem;
+            color: var(--light-text);
+        }
+
+        .search-container {
+            margin-bottom: 1rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        /* Mobile specific styles */
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .tab {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.9rem;
+            }
+            
+            th, td {
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+            
+            header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .card {
+                padding: 1rem;
+            }
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>Masters Pool Leaderboard</h1>
+        <h1>2025 Masters Pool Leaderboard</h1>
+        <div class="subtitle">Live Tournament Standings</div>
     </header>
     
     <div class="container">
         <div class="card">
-            <div id="status">Pool data loaded</div>
+            <div id="status" class="status">Loading Masters tournament data...</div>
+            
+            <div class="controls">
+                <div class="refresh-controls">
+                    <button id="refreshBtn">Refresh Scores</button>
+                    <span class="refresh-timer" id="refreshTimer"></span>
+                </div>
+                
+                <div class="sort-controls">
+                    <label for="sortBy">Sort by: </label>
+                    <select id="sortBy">
+                        <option value="score">Total Score</option>
+                        <option value="name">Team Name</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search for a team or player...">
+            </div>
             
             <div class="tabs">
                 <div class="tab active" data-tab="leaderboard">Pool Leaderboard</div>
@@ -105,95 +330,641 @@
             </div>
             
             <div class="tab-content active" id="leaderboard">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Rank</th>
-                            <th>Team Name</th>
-                            <th>Golfers</th>
-                            <th>Score</th>
-                        </tr>
-                    </thead>
-                    <tbody id="leaderboardBody">
-                        <!-- Leaderboard rows will be populated here -->
-                    </tbody>
-                </table>
+                <div class="responsive-table">
+                    <table id="leaderboardTable">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Team Name</th>
+                                <th>Golfers</th>
+                                <th>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardBody"></tbody>
+                    </table>
+                </div>
             </div>
             
             <div class="tab-content" id="playerScores">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Player</th>
-                            <th>Score</th>
-                            <th>Position</th>
-                            <th>Today</th>
-                            <th>Thru</th>
-                        </tr>
-                    </thead>
-                    <tbody id="playerScoresBody">
-                        <!-- Player scores will be populated here -->
-                    </tbody>
-                </table>
+                <div class="responsive-table">
+                    <table id="playerScoresTable">
+                        <thead>
+                            <tr>
+                                <th>Player</th>
+                                <th>Score</th>
+                                <th>Position</th>
+                                <th>Today</th>
+                                <th>Thru</th>
+                            </tr>
+                        </thead>
+                        <tbody id="playerScoresBody"></tbody>
+                    </table>
+                </div>
             </div>
             
-            <button id="refreshBtn">Refresh Scores</button>
             <div class="last-update" id="lastUpdate"></div>
         </div>
     </div>
 
     <script>
-        // This is the pool data - edit this to match your actual pool
-        const poolData = {
-            teams: [
-                {
-                    name: "Tiger's Fans",
-                    golfers: [
-                        { name: "Tiger Woods", score: -4, position: "T2", today: -2, thru: "F" },
-                        { name: "Scottie Scheffler", score: -7, position: "1", today: -3, thru: "F" },
-                        { name: "Rory McIlroy", score: -2, position: "T5", today: -1, thru: "F" },
-                        { name: "Jordan Spieth", score: 1, position: "T21", today: 2, thru: "F" }
-                    ]
-                },
-                {
-                    name: "Birdie Brigade",
-                    golfers: [
-                        { name: "Brooks Koepka", score: -1, position: "T9", today: 0, thru: "F" },
-                        { name: "Jon Rahm", score: -3, position: "T3", today: -2, thru: "F" },
-                        { name: "Collin Morikawa", score: 2, position: "T32", today: 1, thru: "F" },
-                        { name: "Justin Thomas", score: 0, position: "T15", today: -1, thru: "F" }
-                    ]
-                },
-                {
-                    name: "Green Jacket Club",
-                    golfers: [
-                        { name: "Dustin Johnson", score: -3, position: "T3", today: -1, thru: "F" },
-                        { name: "Patrick Cantlay", score: 1, position: "T21", today: 0, thru: "F" },
-                        { name: "Xander Schauffele", score: 2, position: "T32", today: 2, thru: "F" },
-                        { name: "Tommy Fleetwood", score: 4, position: "T48", today: 3, thru: "F" }
-                    ]
-                }
-            ]
+        // Global state
+        const state = {
+            poolData: null,
+            golfersData: [],
+            lastRefresh: null,
+            refreshInterval: null,
+            autoRefreshMinutes: 5,
+            countdownSeconds: 0,
+            searchTerm: ''
         };
+
+        // DOM Elements
+        const elements = {
+            refreshBtn: document.getElementById('refreshBtn'),
+            refreshTimer: document.getElementById('refreshTimer'),
+            sortBy: document.getElementById('sortBy'),
+            searchInput: document.getElementById('searchInput'),
+            leaderboardBody: document.getElementById('leaderboardBody'),
+            playerScoresBody: document.getElementById('playerScoresBody'),
+            status: document.getElementById('status'),
+            lastUpdate: document.getElementById('lastUpdate'),
+            tabs: document.querySelectorAll('.tab'),
+            tabContents: document.querySelectorAll('.tab-content')
+        };
+
+        // Initialize the application
+        function init() {
+            // Event listeners
+            elements.refreshBtn.addEventListener('click', refreshScores);
+            elements.sortBy.addEventListener('change', renderLeaderboard);
+            elements.searchInput.addEventListener('input', handleSearch);
+            
+            // Tab navigation
+            elements.tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    switchTab(tabId);
+                });
+            });
+            
+            // Load the pool data
+            loadPoolData();
+            
+            // Set up auto-refresh
+            setupAutoRefresh();
+        }
+
+        // Load the pool data
+        function loadPoolData() {
+            // This would normally load from a server or file
+            // For now, we'll hard-code the pool data based on your Excel sheet
+            const poolData = {
+                teams: [
+                    {
+                        name: "1 Time",
+                        golfers: ["McIlroy", "Thomas", "Reed", "Kirk"]
+                    },
+                    {
+                        name: "1 Time",
+                        golfers: ["McIlroy", "Lowry", "Garcia", "Yu"]
+                    },
+                    {
+                        name: "1 Time",
+                        golfers: ["Rahm", "Conners", "Garcia", "Hojgaard"]
+                    },
+                    {
+                        name: "1 Time",
+                        golfers: ["Rahm", "Zalatoris", "Young", "Poston"]
+                    },
+                    {
+                        name: "1 Time",
+                        golfers: ["Scheffler", "Henley", "Reed", "Poston"]
+                    },
+                    {
+                        name: "1 Time",
+                        golfers: ["Scheffler", "Smith", "Straka", "Poston"]
+                    },
+                    {
+                        name: "1 Time",
+                        golfers: ["Xander", "Conners", "Reed", "Canter"]
+                    },
+                    {
+                        name: "1 Time",
+                        golfers: ["Xander", "Zalatoris", "MacIntyre", "Mickelson"]
+                    },
+                    {
+                        name: "1 time Mike J",
+                        golfers: ["Dechambeau", "Cantlay", "Reed", "Mickelson"]
+                    },
+                    {
+                        name: "1 time Mike J",
+                        golfers: ["Dechambeau", "Thomas", "Finau", "Poston"]
+                    },
+                    {
+                        name: "1 time Mike J",
+                        golfers: ["McIlroy", "Thomas", "Reed", "Hoge"]
+                    },
+                    {
+                        name: "1 time Mike J",
+                        golfers: ["McIlroy", "Lowry", "MacIntyre", "Hojgaard"]
+                    },
+                    {
+                        name: "1 time Mike J",
+                        golfers: ["McIlroy", "Thomas", "MacIntyre", "Mickelson"]
+                    },
+                    {
+                        name: "1 time Mike J",
+                        golfers: ["McIlroy", "Cantlay", "Bradley", "Rose"]
+                    },
+                    {
+                        name: "1 time Mike J",
+                        golfers: ["Rahm", "Zalatoris", "Straka", "Hojgaard"]
+                    },
+                    {
+                        name: "1 time Mike J",
+                        golfers: ["Rahm", "Conners", "Reed", "Poston"]
+                    },
+                    {
+                        name: "1 time Mike J",
+                        golfers: ["Scheffler", "Cantlay", "Garcia", "Hoge"]
+                    },
+                    {
+                        name: "1 time Mike J",
+                        golfers: ["Scheffler", "Lowry", "Straka", "Hoge"]
+                    },
+                    {
+                        name: "1 time Mike J",
+                        golfers: ["Scheffler", "Thomas", "Straka", "Hoge"]
+                    },
+                    {
+                        name: "1 time Mike J",
+                        golfers: ["Scheffler", "Thomas", "Bradley", "Jaeger"]
+                    },
+                    {
+                        name: "3 Amigos",
+                        golfers: ["McIlroy", "Thomas", "Straka", "Hoge"]
+                    },
+                    {
+                        name: "3 Amigos",
+                        golfers: ["Morikawa", "Conners", "Straka", "Poston"]
+                    },
+                    {
+                        name: "3 Amigos",
+                        golfers: ["Scheffler", "MW Lee", "McCarthy", "Hoge"]
+                    },
+                    {
+                        name: "3 Jackasses and a donkey",
+                        golfers: ["McIlroy", "Fleetwood", "Straka", "Hoge"]
+                    },
+                    {
+                        name: "3 poles and a hole",
+                        golfers: ["Aberg", "Matsuyama", "Clark", "Echavarria"]
+                    },
+                    {
+                        name: "4 studs",
+                        golfers: ["Scheffler", "Spieth", "Glover", "Hojgaard"]
+                    }
+                ]
+            };
+
+            // Add up to 20 more entries from your Excel data
+            // I'm using random entries here, you can add more from your data
+            poolData.teams.push(...[
+                {
+                    name: "6 Blind Mice",
+                    golfers: ["Aberg", "Bhatia", "Horschel", "Willett"]
+                },
+                {
+                    name: "6 Blind Mice",
+                    golfers: ["Dechambeau", "Smith", "Straka", "Highsmith"]
+                },
+                {
+                    name: "7 Little girls",
+                    golfers: ["McIlroy", "Thomas", "Berger", "Mickelson"]
+                },
+                {
+                    name: "7 Little girls",
+                    golfers: ["McIlroy", "Conners", "Straka", "Pavon"]
+                },
+                {
+                    name: "8 Men Out",
+                    golfers: ["Aberg", "Zalatoris", "Young", "Davis"]
+                },
+                {
+                    name: "8 Men out",
+                    golfers: ["Aberg", "Thomas", "Burns", "Pavon"]
+                },
+                {
+                    name: "A7X",
+                    golfers: ["Dechambeau", "Hovland", "Glover", "Rose"]
+                },
+                {
+                    name: "A7X",
+                    golfers: ["McIlroy", "Matsuyama", "Harman", "Hoge"]
+                },
+                {
+                    name: "AAC!!",
+                    golfers: ["Scheffler", "Smith", "Reed", "Rose"]
+                },
+                {
+                    name: "AADOGE",
+                    golfers: ["Scheffler", "Fleetwood", "Reed", "Davis"]
+                },
+                {
+                    name: "AAMAGA",
+                    golfers: ["Scheffler", "Smith", "Homa", "Pavon"]
+                },
+                {
+                    name: "Aaron Meyer",
+                    golfers: ["McIlroy", "Fleetwood", "Burns", "Bezuidenhout"]
+                },
+                {
+                    name: "Aaron Peddicord",
+                    golfers: ["McIlroy", "MW Lee", "Young", "Highsmith"]
+                },
+                {
+                    name: "AAV",
+                    golfers: ["Dechambeau", "Koepka", "Harman", "Jaeger"]
+                },
+                {
+                    name: "Adam Green",
+                    golfers: ["McIlroy", "Thomas", "Young", "Rose"]
+                },
+                {
+                    name: "Adam Koehler",
+                    golfers: ["McIlroy", "Thomas", "Spaun", "Rose"]
+                },
+                {
+                    name: "Adam Marlman",
+                    golfers: ["Dechambeau", "Koepka", "Spaun", "Bezuidenhout"]
+                },
+                {
+                    name: "Adam Rigsby",
+                    golfers: ["McIlroy", "MW Lee", "Theegala", "Couples"]
+                },
+                {
+                    name: "Ain Skeered",
+                    golfers: ["Aberg", "Matsuyama", "Finau", "Rose"]
+                },
+                {
+                    name: "Ain Skeered",
+                    golfers: ["McIlroy", "Niemann", "Harman", "Rose"]
+                }
+            ]);
+
+            // Store the data in state
+            state.poolData = poolData;
+            
+            // Get a list of all unique golfers
+            const allGolfers = new Set();
+            poolData.teams.forEach(team => {
+                team.golfers.forEach(golfer => allGolfers.add(golfer));
+            });
+            
+            // Fetch scores for all golfers
+            fetchGolferScores(Array.from(allGolfers));
+        }
+
+        // Fetch scores for golfers (simulated)
+        async function fetchGolferScores(golferNames) {
+            elements.status.textContent = 'Fetching latest scores...';
+            
+            try {
+                // In a real app, this would fetch from a live scoring API
+                // For now, we'll generate simulated scores
+                const scores = golferNames.map(name => {
+                    // Find existing data for this golfer or generate new
+                    const existing = state.golfersData.find(g => g.name === name);
+                    
+                    if (existing) {
+                        // Update existing data with some small changes to simulate live updates
+                        const shouldChange = Math.random() > 0.7;
+                        if (shouldChange) {
+                            // Randomly update the score by -1, 0, or +1
+                            const change = Math.floor(Math.random() * 3) - 1;
+                            existing.score += change;
+                            existing.today += change;
+                            
+                            // Update the position based on the new score
+                            existing.position = getPositionFromScore(existing.score);
+                            
+                            // Maybe update the 'thru' status
+                            if (existing.thru !== 'F' && Math.random() > 0.5) {
+                                const currentThru = parseInt(existing.thru) || 0;
+                                existing.thru = currentThru < 18 ? (currentThru + 1).toString() : 'F';
+                            }
+                        }
+                        return existing;
+                    } else {
+                        // Generate new data for this golfer
+                        // Top-tier golfers more likely to have better scores
+                        let baseScore;
+                        if (['Scheffler', 'McIlroy', 'Rahm', 'Xander', 'Thomas'].includes(name)) {
+                            // Top players likely to be under par
+                            baseScore = Math.floor(Math.random() * 10) - 8;
+                        } else if (['Koepka', 'Hovland', 'Morikawa', 'Cantlay', 'Smith', 'Dechambeau', 'Matsuyama', 'Aberg'].includes(name)) {
+                            // Mid-top players
+                            baseScore = Math.floor(Math.random() * 12) - 7;
+                        } else if (['Zalatoris', 'Lowry', 'Fleetwood', 'Spieth', 'Conners', 'MW Lee', 'Hatton', 'Niemann'].includes(name)) {
+                            // Mid-level players
+                            baseScore = Math.floor(Math.random() * 14) - 6;
+                        } else if (['Finau', 'Reed', 'Straka', 'Clark', 'Homa', 'Harman', 'Day', 'Bradley', 'Young', 'Fitzpatrick'].includes(name)) {
+                            // Mid-low players
+                            baseScore = Math.floor(Math.random() * 14) - 4;
+                        } else if (['MacIntyre', 'Hoge', 'Theegala', 'Bhatia', 'Scott', 'Garcia', 'Johnson', 'Kim', 'Hojgaard', 'Henley'].includes(name)) {
+                            // Lower tier but still solid
+                            baseScore = Math.floor(Math.random() * 16) - 2;
+                        } else {
+                            // Rest of the field
+                            baseScore = Math.floor(Math.random() * 16) + 1;
+                        }
+
+                        // Random today score, usually related to total score
+                        const today = Math.floor(Math.random() * 7) - 3;
+                        
+                        // Random hole progress
+                        const thru = Math.random() > 0.3 ? 'F' : Math.floor(Math.random() * 18).toString();
+                        
+                        return {
+                            name,
+                            score: baseScore,
+                            position: getPositionFromScore(baseScore),
+                            today,
+                            thru
+                        };
+                    }
+                });
+                
+                // Update the state with new scores
+                state.golfersData = scores;
+                
+                // Calculate scores for each team
+                calculateTeamScores();
+                
+                // Render the tables
+                renderLeaderboard();
+                renderPlayerScores();
+                
+                // Update status and timestamp
+                state.lastRefresh = new Date();
+                elements.status.textContent = 'Scores updated successfully';
+                elements.lastUpdate.textContent = `Last updated: ${state.lastRefresh.toLocaleString()}`;
+                
+            } catch (error) {
+                console.error('Error fetching golfer scores:', error);
+                elements.status.textContent = 'Error fetching scores. Please try again.';
+            }
+        }
+
+        // Calculate scores for each team based on their golfers' performances
+        function calculateTeamScores() {
+            if (!state.poolData || !state.poolData.teams || !state.golfersData) return;
+            
+            state.poolData.teams.forEach(team => {
+                // For each golfer on the team, find their score data
+                const golfersWithScores = team.golfers.map(golferName => {
+                    const golferData = state.golfersData.find(g => g.name === golferName);
+                    return golferData || { name: golferName, score: 0, position: 'N/A', today: 0, thru: '-' };
+                });
+                
+                // Store the golfer score data on the team
+                team.golfersWithScores = golfersWithScores;
+                
+                // Calculate the team's total score
+                team.totalScore = golfersWithScores.reduce((sum, golfer) => sum + golfer.score, 0);
+            });
+        }
+
+        // Helper function to get position string from score
+        function getPositionFromScore(score) {
+            // In a real app, this would be based on the actual position from the API
+            // For simulation, we'll generate positions based on score
+            if (score <= -10) return `1`;
+            if (score <= -8) return `T2`;
+            if (score <= -6) return `T3`;
+            if (score <= -4) return `T${Math.floor(Math.random() * 3) + 4}`;
+            if (score <= -2) return `T${Math.floor(Math.random() * 5) + 6}`;
+            if (score <= 0) return `T${Math.floor(Math.random() * 10) + 10}`;
+            if (score <= 2) return `T${Math.floor(Math.random() * 15) + 20}`;
+            if (score <= 4) return `T${Math.floor(Math.random() * 20) + 30}`;
+            return `T${Math.floor(Math.random() * 30) + 40}`;
+        }
+
+        // Format golf scores
+        function formatScore(score) {
+            if (score === null || score === undefined) return '-';
+            if (score === 0) return 'E';
+            return score > 0 ? `+${score}` : score.toString();
+        }
+
+        // Render the leaderboard
+        function renderLeaderboard() {
+            if (!state.poolData || !state.poolData.teams) return;
+            
+            // Sort teams based on selected criteria
+            const sortBy = elements.sortBy.value;
+            const sortedTeams = [...state.poolData.teams];
+            
+            if (sortBy === 'score') {
+                sortedTeams.sort((a, b) => a.totalScore - b.totalScore);
+            } else if (sortBy === 'name') {
+                sortedTeams.sort((a, b) => a.name.localeCompare(b.name));
+            }
+            
+            // Filter teams based on search term if any
+            const filteredTeams = state.searchTerm 
+                ? sortedTeams.filter(team => 
+                    team.name.toLowerCase().includes(state.searchTerm.toLowerCase()) ||
+                    team.golfers.some(golfer => golfer.toLowerCase().includes(state.searchTerm.toLowerCase()))
+                  )
+                : sortedTeams;
+            
+            // Clear the table body
+            elements.leaderboardBody.innerHTML = '';
+            
+            // Add rows for each team
+            filteredTeams.forEach((team, index) => {
+                const row = document.createElement('tr');
+                
+                // Add highlight class for top 3
+                if (index === 0) row.classList.add('first', 'top-three');
+                else if (index === 1) row.classList.add('second', 'top-three');
+                else if (index === 2) row.classList.add('third', 'top-three');
+                
+                // Rank cell
+                const rankCell = document.createElement('td');
+                rankCell.textContent = index + 1;
+                
+                // Team name cell
+                const nameCell = document.createElement('td');
+                nameCell.textContent = team.name;
+                nameCell.classList.add('bold');
+                
+                // Golfers cell
+                const golfersCell = document.createElement('td');
+                if (team.golfersWithScores) {
+                    golfersCell.innerHTML = team.golfersWithScores.map(golfer => {
+                        const scoreClass = golfer.score < 0 ? 'negative' : golfer.score > 0 ? 'positive' : 'even';
+                        return `<div class="player-summary">${golfer.name} <span class="score ${scoreClass}">${formatScore(golfer.score)}</span></div>`;
+                    }).join('');
+                } else {
+                    golfersCell.innerHTML = team.golfers.join(', ');
+                }
+                
+                // Score cell
+                const scoreCell = document.createElement('td');
+                scoreCell.textContent = formatScore(team.totalScore);
+                scoreCell.classList.add('score');
+                if (team.totalScore < 0) scoreCell.classList.add('negative');
+                else if (team.totalScore > 0) scoreCell.classList.add('positive');
+                else scoreCell.classList.add('even');
+                
+                // Add cells to row
+                row.appendChild(rankCell);
+                row.appendChild(nameCell);
+                row.appendChild(golfersCell);
+                row.appendChild(scoreCell);
+                
+                // Add row to table
+                elements.leaderboardBody.appendChild(row);
+            });
+        }
+
+        // Render the player scores table
+        function renderPlayerScores() {
+            if (!state.golfersData) return;
+            
+            // Sort golfers by score (lowest first)
+            const sortedGolfers = [...state.golfersData];
+            sortedGolfers.sort((a, b) => a.score - b.score);
+            
+            // Filter based on search term if any
+            const filteredGolfers = state.searchTerm
+                ? sortedGolfers.filter(golfer => 
+                    golfer.name.toLowerCase().includes(state.searchTerm.toLowerCase())
+                  )
+                : sortedGolfers;
+            
+            // Clear the table body
+            elements.playerScoresBody.innerHTML = '';
+            
+            // Add rows for each golfer
+            filteredGolfers.forEach(golfer => {
+                const row = document.createElement('tr');
+                
+                // Name cell
+                const nameCell = document.createElement('td');
+                nameCell.textContent = golfer.name;
+                nameCell.classList.add('bold');
+                
+                // Score cell
+                const scoreCell = document.createElement('td');
+                scoreCell.textContent = formatScore(golfer.score);
+                scoreCell.classList.add('score');
+                if (golfer.score < 0) scoreCell.classList.add('negative');
+                else if (golfer.score > 0) scoreCell.classList.add('positive');
+                else scoreCell.classList.add('even');
+                
+                // Position cell
+                const positionCell = document.createElement('td');
+                positionCell.textContent = golfer.position;
+                
+                // Today score cell
+                const todayCell = document.createElement('td');
+                todayCell.textContent = formatScore(golfer.today);
+                if (golfer.today < 0) todayCell.classList.add('negative');
+                else if (golfer.today > 0) todayCell.classList.add('positive');
+                else todayCell.classList.add('even');
+                
+                // Thru cell
+                const thruCell = document.createElement('td');
+                thruCell.textContent = golfer.thru;
+                thruCell.classList.add('thru-cell');
+                
+                // Add cells to row
+                row.appendChild(nameCell);
+                row.appendChild(scoreCell);
+                row.appendChild(positionCell);
+                row.appendChild(todayCell);
+                row.appendChild(thruCell);
+                
+                // Add row to table
+                elements.playerScoresBody.appendChild(row);
+            });
+        }
         
-      const poolData = {
-    teams: [
-        {
-            name: "Your Team Name 1",
-            golfers: [
-                { name: "Golfer 1", score: -3, position: "T4", today: -1, thru: "F" },
-                { name: "Golfer 2", score: -5, position: "T2", today: -2, thru: "F" },
-                // Add all golfers for this team
-            ]
-        },
-        {
-            name: "Your Team Name 2",
-            golfers: [
-                { name: "Golfer A", score: 0, position: "T15", today: 0, thru: "F" },
-                { name: "Golfer B", score: -2, position: "T8", today: -1, thru: "F" },
-                // Add all golfers for this team
-            ]
-        },
-        // Add all your teams
+        // Handle search input
+        function handleSearch(event) {
+            state.searchTerm = event.target.value.trim().toLowerCase();
+            renderLeaderboard();
+            renderPlayerScores();
+        }
+        
+        // Refresh scores
+        function refreshScores() {
+            // Disable refresh button during refresh
+            elements.refreshBtn.disabled = true;
+            
+            // Get the list of all golfer names
+            const golferNames = Array.from(new Set(
+                state.poolData.teams.flatMap(team => team.golfers)
+            ));
+            
+            // Fetch updated scores
+            fetchGolferScores(golferNames).finally(() => {
+                // Re-enable refresh button
+                elements.refreshBtn.disabled = false;
+                
+                // Reset the countdown timer
+                state.countdownSeconds = state.autoRefreshMinutes * 60;
+                updateRefreshTimer();
+            });
+        }
+        
+        // Set up auto-refresh
+        function setupAutoRefresh() {
+            // Clear any existing interval
+            if (state.refreshInterval) {
+                clearInterval(state.refreshInterval);
+            }
+            
+            // Set the initial countdown
+            state.countdownSeconds = state.autoRefreshMinutes * 60;
+            updateRefreshTimer();
+            
+            // Set up a new interval
+            state.refreshInterval = setInterval(() => {
+                state.countdownSeconds--;
+                updateRefreshTimer();
+                
+                // Auto refresh when countdown reaches zero
+                if (state.countdownSeconds <= 0) {
+                    refreshScores();
+                }
+            }, 1000);
+        }
+        
+        // Update the refresh timer display
+        function updateRefreshTimer() {
+            const minutes = Math.floor(state.countdownSeconds / 60);
+            const seconds = state.countdownSeconds % 60;
+            elements.refreshTimer.textContent = `Next refresh in ${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        // Switch between tabs
+        function switchTab(tabId) {
+            // Update tab buttons
+            elements.tabs.forEach(tab => {
+                tab.classList.toggle('active', tab.getAttribute('data-tab') === tabId);
+            });
+            
+            // Update tab content visibility
+            elements.tabContents.forEach(content => {
+                content.classList.toggle('active', content.id === tabId);
+            });
+        }
+        
+        // Initialize the application when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
     ]
 };
