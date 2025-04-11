@@ -176,158 +176,24 @@
             ]
         };
         
-        // Calculate team scores
-        poolData.teams.forEach(team => {
-            team.totalScore = team.golfers.reduce((sum, g) => sum + g.score, 0);
-        });
-        
-        // Initialize app when DOM is loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            // Render the initial data
-            renderLeaderboard();
-            renderPlayerScores();
-            
-            // Set up event listeners
-            document.getElementById('refreshBtn').addEventListener('click', refreshScores);
-            
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    const tabId = tab.getAttribute('data-tab');
-                    switchTab(tabId);
-                });
-            });
-            
-            // Update timestamp
-            document.getElementById('lastUpdate').textContent = 'Last updated: ' + new Date().toLocaleString();
-        });
-        
-        // Refresh scores (simulates updating scores with small changes)
-        function refreshScores() {
-            // Update some scores randomly
-            poolData.teams.forEach(team => {
-                team.golfers.forEach(golfer => {
-                    // 50% chance to change score by -1, 0, or +1
-                    if (Math.random() > 0.5) {
-                        const change = Math.floor(Math.random() * 3) - 1;
-                        golfer.score += change;
-                        golfer.today += change;
-                        
-                        // Update position based on new score
-                        if (golfer.score < -5) golfer.position = "T1";
-                        else if (golfer.score < -3) golfer.position = "T" + (Math.floor(Math.random() * 3) + 2);
-                        else if (golfer.score < 0) golfer.position = "T" + (Math.floor(Math.random() * 5) + 5);
-                        else if (golfer.score < 3) golfer.position = "T" + (Math.floor(Math.random() * 10) + 10);
-                        else golfer.position = "T" + (Math.floor(Math.random() * 20) + 20);
-                    }
-                });
-                
-                // Recalculate team total
-                team.totalScore = team.golfers.reduce((sum, g) => sum + g.score, 0);
-            });
-            
-            // Re-render tables
-            renderLeaderboard();
-            renderPlayerScores();
-            
-            // Update timestamp
-            document.getElementById('lastUpdate').textContent = 'Last updated: ' + new Date().toLocaleString();
-        }
-        
-        // Render the leaderboard
-        function renderLeaderboard() {
-            // Sort teams by score
-            const sortedTeams = [...poolData.teams].sort((a, b) => a.totalScore - b.totalScore);
-            
-            // Get table body
-            const body = document.getElementById('leaderboardBody');
-            body.innerHTML = '';
-            
-            // Add rows
-            sortedTeams.forEach((team, index) => {
-                const row = document.createElement('tr');
-                
-                // Add class for top 3
-                if (index === 0) row.classList.add('first');
-                else if (index === 1) row.classList.add('second');
-                else if (index === 2) row.classList.add('third');
-                
-                // Format golfers with scores
-                const golfersHtml = team.golfers.map(g => {
-                    const scoreClass = g.score < 0 ? 'negative' : g.score > 0 ? 'positive' : '';
-                    const scoreText = g.score === 0 ? 'E' : g.score > 0 ? `+${g.score}` : g.score;
-                    return `<div>${g.name} <span class="${scoreClass}">${scoreText}</span></div>`;
-                }).join('');
-                
-                // Format team score
-                const scoreClass = team.totalScore < 0 ? 'negative' : team.totalScore > 0 ? 'positive' : '';
-                const scoreText = team.totalScore === 0 ? 'E' : team.totalScore > 0 ? `+${team.totalScore}` : team.totalScore;
-                
-                // Create row content
-                row.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td><strong>${team.name}</strong></td>
-                    <td>${golfersHtml}</td>
-                    <td class="${scoreClass}"><strong>${scoreText}</strong></td>
-                `;
-                
-                body.appendChild(row);
-            });
-        }
-        
-        // Render player scores
-        function renderPlayerScores() {
-            // Get all golfers
-            const allGolfers = [];
-            poolData.teams.forEach(team => {
-                team.golfers.forEach(golfer => {
-                    allGolfers.push(golfer);
-                });
-            });
-            
-            // Sort by score
-            const sortedGolfers = [...allGolfers].sort((a, b) => a.score - b.score);
-            
-            // Get table body
-            const body = document.getElementById('playerScoresBody');
-            body.innerHTML = '';
-            
-            // Add rows
-            sortedGolfers.forEach(golfer => {
-                const row = document.createElement('tr');
-                
-                // Format score
-                const scoreClass = golfer.score < 0 ? 'negative' : golfer.score > 0 ? 'positive' : '';
-                const scoreText = golfer.score === 0 ? 'E' : golfer.score > 0 ? `+${golfer.score}` : golfer.score;
-                
-                // Format today's score
-                const todayClass = golfer.today < 0 ? 'negative' : golfer.today > 0 ? 'positive' : '';
-                const todayText = golfer.today === 0 ? 'E' : golfer.today > 0 ? `+${golfer.today}` : golfer.today;
-                
-                // Create row content
-                row.innerHTML = `
-                    <td><strong>${golfer.name}</strong></td>
-                    <td class="${scoreClass}">${scoreText}</td>
-                    <td>${golfer.position}</td>
-                    <td class="${todayClass}">${todayText}</td>
-                    <td>${golfer.thru}</td>
-                `;
-                
-                body.appendChild(row);
-            });
-        }
-        
-        // Switch between tabs
-        function switchTab(tabId) {
-            // Update tab buttons
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.toggle('active', tab.getAttribute('data-tab') === tabId);
-            });
-            
-            // Update content visibility
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.toggle('active', content.id === tabId);
-            });
-        }
-    </script>
-</body>
-</html>
+      const poolData = {
+    teams: [
+        {
+            name: "Your Team Name 1",
+            golfers: [
+                { name: "Golfer 1", score: -3, position: "T4", today: -1, thru: "F" },
+                { name: "Golfer 2", score: -5, position: "T2", today: -2, thru: "F" },
+                // Add all golfers for this team
+            ]
+        },
+        {
+            name: "Your Team Name 2",
+            golfers: [
+                { name: "Golfer A", score: 0, position: "T15", today: 0, thru: "F" },
+                { name: "Golfer B", score: -2, position: "T8", today: -1, thru: "F" },
+                // Add all golfers for this team
+            ]
+        },
+        // Add all your teams
+    ]
+};
